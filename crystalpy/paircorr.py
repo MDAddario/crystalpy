@@ -40,6 +40,16 @@ for n1 in range(-index_range, index_range+1):
 atom_circle = unit_circle * atom_size
 atoms = [atom_circle + offset for offset in lattice]
 
+# Construct reduced lattice without origin atom
+num_atoms = lattice.shape[0]
+half_atoms = num_atoms // 2
+
+reduced_lattice = np.vstack((lattice[:half_atoms, :], \
+							lattice[half_atoms + 1:, :]))
+
+# Determine the distance from the origin for each atom
+distances = np.sqrt(np.sum(np.square(reduced_lattice), axis=1))
+
 '''
 GENERATE DATA SETS
 '''
@@ -53,7 +63,7 @@ fps = 30
 circle_quantum = unit_circle * spatial_resolution
 data_1 = [frame * circle_quantum for frame in range(tot_frames)]
 
-# Generate random curve g(r)
+# Generate pair correlation function (WITHOUT DIVIDING)
 x_vals = (np.arange(tot_frames) * spatial_resolution)
 y_vals = (np.sin(x_vals))
 data_2 = np.hstack((x_vals[:,None], y_vals[:,None]))
