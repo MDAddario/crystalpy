@@ -77,7 +77,7 @@ for radius in x_vals:
 	if radius < 1e-6:
 		y_vals = np.array([0])
 		continue
-
+	
 	# Normalization factor
 	normalization = pre_norm * radius
 	
@@ -135,5 +135,5 @@ ANIMATE THE DIAGRAM
 '''
 
 ani = FuncAnimation(fig, update, tot_frames, interval=1000/fps, blit=False)
-#ani.save('data/animation.gif', writer='imagemagick', fps=fps)
+ani.save('data/animation.gif', writer='imagemagick', fps=fps)
 plt.show()
