@@ -64,8 +64,18 @@ circle_quantum = unit_circle * spatial_resolution
 data_1 = [frame * circle_quantum for frame in range(tot_frames)]
 
 # Generate pair correlation function (WITHOUT DIVIDING)
-x_vals = (np.arange(tot_frames) * spatial_resolution)
-y_vals = (np.sin(x_vals))
+x_vals = np.arange(tot_frames) * spatial_resolution
+y_vals = np.empty((0))
+epsilon = 0.5
+
+for radius in x_vals:
+	
+	# Compute distance between atoms and circle
+	delta = np.abs(distances - radius)
+	neighbors = np.where(delta < epsilon)[0].shape[0]
+	y_vals = np.append(y_vals, neighbors)
+	del delta
+
 data_2 = np.hstack((x_vals[:,None], y_vals[:,None]))
 
 '''
@@ -106,7 +116,7 @@ ax1.set_xlim([-size, size])
 ax1.set_ylim([-size, size])
 ax1.set_title('Crystal Lattice', fontsize=font)
 ax2.set_xlim([0, size])
-ax2.set_ylim([0, 5])
+ax2.set_ylim([0, 12])
 ax2.set_title('Pair Correlation Function', fontsize=font)
 
 '''
