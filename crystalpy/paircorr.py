@@ -19,13 +19,14 @@ CUBIC LATTICE
 '''
 
 # User set parameters
-a = 10
+a = 8
 atom_size = 1
-index_range = 3
+index_range = 5
 
 # Direct lattice vectors
 a1 = a * np.array([1, 0])
 a2 = a * np.array([0, 1])
+density = 1 / a**2
 
 # Construct lattice
 width = 2 * index_range + 1
@@ -58,23 +59,33 @@ GENERATE DATA SETS
 spatial_resolution = 0.1
 tot_frames = 360
 fps = 30
+dr = 2
 
 # Generate expanding circle
 circle_quantum = unit_circle * spatial_resolution
 data_1 = [frame * circle_quantum for frame in range(tot_frames)]
 
-# Generate pair correlation function (WITHOUT DIVIDING)
+# Generate pair correlation function
 x_vals = np.arange(tot_frames) * spatial_resolution
 y_vals = np.empty((0))
-epsilon = 0.5
+
+pre_norm = density * 2.0 * np.pi * dr
 
 for radius in x_vals:
+
+	# Error check
+	if radius < 1e-6:
+		y_vals = np.array([0])
+		continue
+
+	# Normalization factor
+	normalization = pre_norm * radius
 	
 	# Compute distance between atoms and circle
 	delta = np.abs(distances - radius)
-	neighbors = np.where(delta < epsilon)[0].shape[0]
-	y_vals = np.append(y_vals, neighbors)
-	del delta
+	neighbors = np.where(delta < dr / 2)[0].shape[0]
+	y_vals = np.append(y_vals, np.sum(neighbors) / normalization)
+	del delta, neighbors
 
 data_2 = np.hstack((x_vals[:,None], y_vals[:,None]))
 
@@ -116,7 +127,7 @@ ax1.set_xlim([-size, size])
 ax1.set_ylim([-size, size])
 ax1.set_title('Crystal Lattice', fontsize=font)
 ax2.set_xlim([0, size])
-ax2.set_ylim([0, 12])
+ax2.set_ylim([0, 4])
 ax2.set_title('Pair Correlation Function', fontsize=font)
 
 '''
